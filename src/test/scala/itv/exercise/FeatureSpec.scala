@@ -11,14 +11,10 @@ import scala.util.Random
 class FeatureSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks {
   implicit def noShrink[T]: Shrink[T] = Shrink(_ => Stream.empty)
 
-  def test(feature1: FeatureValue, feature2: FeatureValue, feature3: FeatureValue): Boolean =
-    feature1 == feature2 && feature2 == feature3 ||
-      feature1 != feature2 && feature2 != feature3 && feature1 != feature3
-
   "A card feature" - {
     "is valid for a Set if" - {
       "they are all the same" in forAll { featureValue: FeatureValue =>
-        test(
+        Feature.isValidForSet(
           feature1 = featureValue,
           feature2 = featureValue,
           feature3 = featureValue
@@ -29,7 +25,7 @@ class FeatureSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChe
 
         forAll(differentFeatureValuesInRandomOrder) {
           case (_1, _2, _3) =>
-            test(
+            Feature.isValidForSet(
               feature1 = _1,
               feature2 = _2,
               feature3 = _3
@@ -46,7 +42,7 @@ class FeatureSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChe
 
       forAll(differentFeatureValuesInRandomOrder) {
         case (_1, _2, _3) =>
-          test(
+          Feature.isValidForSet(
             feature1 = _1,
             feature2 = _2,
             feature3 = _3
