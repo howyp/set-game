@@ -3,7 +3,8 @@ package itv.exercise
 sealed trait FeatureValue
 
 sealed trait Feature {
-  def allValues: (FeatureValue, FeatureValue, FeatureValue)
+  type Value <: FeatureValue
+  def allValues: (Value, Value, Value)
 }
 object Feature {
   def isValidForSet(feature1: FeatureValue, feature2: FeatureValue, feature3: FeatureValue): Boolean =
@@ -13,6 +14,8 @@ object Feature {
 
 sealed trait Colour extends FeatureValue
 object Colour extends Feature {
+  type Value = Colour
+
   case object Red    extends Colour
   case object Purple extends Colour
   case object Green  extends Colour
@@ -21,6 +24,8 @@ object Colour extends Feature {
 
 sealed trait Number extends FeatureValue
 object Number extends Feature {
+  type Value = Number
+
   case object One   extends Number
   case object Two   extends Number
   case object Three extends Number
@@ -29,6 +34,8 @@ object Number extends Feature {
 
 sealed trait Shading extends FeatureValue
 object Shading extends Feature {
+  type Value = Shading
+
   case object Solid    extends Shading
   case object Striped  extends Shading
   case object Outlined extends Shading
@@ -37,6 +44,8 @@ object Shading extends Feature {
 
 sealed trait Shape extends FeatureValue
 object Shape extends Feature {
+  type Value = Shape
+
   case object Oval     extends Shape
   case object Squiggle extends Shape
   case object Diamonds extends Shape

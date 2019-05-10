@@ -51,7 +51,7 @@ class FeatureSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChe
     }
   }
 
-  def shuffleTuple[T](v: (T, T, T)): (T, T, T) =
+  def shuffleTuple[T](v: (f.Value, f.Value, f.Value) forSome { val f: itv.exercise.Feature }) =
     Random.shuffle(asList(v)) match {
       case List(_1, _2, _3) => (_1, _2, _3)
     }
