@@ -43,4 +43,9 @@ object Shape extends Feature {
   val allValues = (Oval, Squiggle, Diamonds)
 }
 
-case class Card(shading: Shading)
+case class Card(
+    colour: Colour,
+    number: Number,
+    shading: Shading,
+    shape: Shape
+)
