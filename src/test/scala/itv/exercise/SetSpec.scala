@@ -1,7 +1,12 @@
 package itv.exercise
 
+import org.scalacheck.{Arbitrary, Gen}
+import Arbitrary.arbitrary
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FreeSpec, Matchers}
+import org.scalacheck.magnolia._
+
+import scala.util.Random
 
 class SetSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks {
   def test(card1: Card, card2: Card, card3: Card): Boolean =
@@ -10,28 +15,42 @@ class SetSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks 
 
   "A Set of three cards" - {
     "is valid if" - {
-      "a feature is all the same" in {
+      "a feature is all the same" in forAll { shading: Shading =>
         test(
-          card1 = Card(Shading.Solid),
-          card2 = Card(Shading.Solid),
-          card3 = Card(Shading.Solid)
+          card1 = Card(shading),
+          card2 = Card(shading),
+          card3 = Card(shading)
         ) should be(true)
       }
       "a feature is different in all three cards" in {
-        test(
-          card1 = Card(Shading.Solid),
-          card2 = Card(Shading.Striped),
-          card3 = Card(Shading.Outlined)
-        ) should be(true)
+        val differentFeaturesInRandomOrder =
+          Gen.const(List(Shading.Solid, Shading.Striped, Shading.Outlined)).map(Random.shuffle(_))
+
+        forAll(differentFeaturesInRandomOrder) {
+          case List(_1, _2, _3) =>
+            test(
+              card1 = Card(_1),
+              card2 = Card(_2),
+              card3 = Card(_3)
+            ) should be(true)
+        }
       }
     }
     "is invalid if" - {
       "a feature is the same for two but different for the third" in {
-        test(
-          card1 = Card(Shading.Solid),
-          card2 = Card(Shading.Solid),
-          card3 = Card(Shading.Outlined)
-        ) should be(false)
+        val differentShadings = for {
+          _1 <- arbitrary[Shading]
+          _2 <- arbitrary[Shading] if _1 != _2
+        } yield (_1, _2)
+
+        forAll(differentShadings) {
+          case (_1, _2) =>
+            test(
+              card1 = Card(_1),
+              card2 = Card(_1),
+              card3 = Card(_2)
+            ) should be(false)
+        }
       }
     }
   }
