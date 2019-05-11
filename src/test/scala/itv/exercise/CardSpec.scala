@@ -14,14 +14,16 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
 
   "Three cards are" - {
     def validCombinationFor(feature: Feature) = Gen.oneOf(
-      Gen.oneOf(asList(feature.allValues)).map(v => (v, v, v)),
+      Gen.oneOf(asList3(feature.allValues)).map(v => (v, v, v)),
       Gen.const(feature.allValues).map(shuffleTuple)
     )
     def invalidCombinationFor(feature: Feature) =
       for {
-        first  <- Gen.oneOf(asList(feature.allValues))
-        second <- Gen.oneOf(asList(feature.allValues)) if first != second
+        first  <- Gen.oneOf(asList3(feature.allValues))
+        second <- Gen.oneOf(asList3(feature.allValues)) if first != second
       } yield shuffleTuple((first, first, second))
+    def combinationFor(feature: Feature)(valid: Boolean): Gen[(feature.Value, feature.Value, feature.Value)] =
+      if (valid) validCombinationFor(feature) else invalidCombinationFor(feature)
 
     "a valid set if all features are valid" in forAll(
       validCombinationFor(Colour),
@@ -39,12 +41,17 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
           card3 = Card(colour3, number3, shading3, shape3)
         ) should be(true)
     }
-    "a invalid set if one feature is invalid" in forAll(
-      validCombinationFor(Colour),
-      validCombinationFor(Number),
-      invalidCombinationFor(Shading),
-      validCombinationFor(Shape)
-    ) {
+
+    val atLeastOneInvalidCombination =
+      for {
+        (colourValid, numberValid, shadingValid, shapeValid) <- fourBooleansWithAtLeastOneFalse
+        colour                                               <- combinationFor(Colour)(colourValid)
+        number                                               <- combinationFor(Number)(numberValid)
+        shading                                              <- combinationFor(Shading)(shadingValid)
+        shape                                                <- combinationFor(Shape)(shapeValid)
+      } yield (colour, number, shading, shape)
+
+    "a invalid set if one feature is invalid" in forAll(atLeastOneInvalidCombination) {
       case ((colour1, colour2, colour3),
             (number1, number2, number3),
             (shading1, shading2, shading3),
@@ -56,12 +63,25 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
         ) should be(false)
     }
   }
+
+  private def fourBooleansWithAtLeastOneFalse =
+    Gen.zip(arbitrary[Boolean], arbitrary[Boolean], Gen.const(false), arbitrary[Boolean]) //TODO .map(shuffleTuple4)
+
   def shuffleTuple[T](v: (T, T, T)): (T, T, T) =
-    Random.shuffle(asList(v)) match {
+    Random.shuffle(asList3(v)) match {
       case List(_1, _2, _3) => (_1, _2, _3)
     }
 
-  private def asList[T](v: (T, T, T)) = {
+  private def asList3[T](v: (T, T, T)) = {
     List(v._1, v._2, v._3)
+  }
+
+  def shuffleTuple4[T](v: (T, T, T, T)): (T, T, T, T) =
+    Random.shuffle(asList4(v)) match {
+      case List(_1, _2, _3, _4) => (_1, _2, _3, _4)
+    }
+
+  private def asList4[T](v: (T, T, T, T)) = {
+    List(v._1, v._2, v._3, v._4)
   }
 }
