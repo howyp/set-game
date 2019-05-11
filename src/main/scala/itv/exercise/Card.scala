@@ -6,11 +6,6 @@ sealed trait Feature {
   type Value <: FeatureValue
   def allValues: (Value, Value, Value)
 }
-object Feature {
-  def isValidForSet(feature1: FeatureValue, feature2: FeatureValue, feature3: FeatureValue): Boolean =
-    feature1 == feature2 && feature2 == feature3 ||
-      feature1 != feature2 && feature2 != feature3 && feature1 != feature3
-}
 
 sealed trait Colour extends FeatureValue
 object Colour extends Feature {
@@ -58,3 +53,22 @@ case class Card(
     shading: Shading,
     shape: Shape
 )
+
+object Set {
+
+  def validate(card1: Card, card2: Card, card3: Card): Boolean = {
+    def validate[F <: FeatureValue](f: Card => F): Boolean = {
+      val feature1 = f(card1)
+      val feature2 = f(card2)
+      val feature3 = f(card3)
+      (feature1 == feature2 && feature2 == feature3) ||
+      (feature1 != feature2 && feature2 != feature3 && feature1 != feature3)
+    }
+
+    validate(_.colour) &&
+    validate(_.number) &&
+    validate(_.shading) &&
+    validate(_.shape)
+  }
+
+}
