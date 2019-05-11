@@ -30,7 +30,7 @@ class GameSpec extends FreeSpec with Matchers {
     )
     val invalidSet1 = List(
       Card(Purple, One, Solid, Diamonds),
-      Card(Red, One, Outlined, Diamonds),
+      Card(Red, One, Striped, Diamonds),
       Card(Green, Two, Outlined, Squiggle)
     )
     val invalidSet2 = List(
@@ -68,6 +68,15 @@ class GameSpec extends FreeSpec with Matchers {
       info("Player 1 submits a set which includes cards not yet on the table")
       gameAfterMove1.submitSet("player1", validSet4(0), validSet4(1), validSet4(2)) should be(
         Left("cards not found on table"))
+
+      info("Player 2 submits two valid sets and gets two points")
+      val Right(gameAfterMove4) = gameAfterMove1.submitSet("player2", validSet3(0), validSet3(1), validSet3(2))
+      gameAfterMove4.points should be(Map("player1" -> 1, "player2" -> 1, "player3" -> 0))
+      gameAfterMove4.cardsOnTable should be(invalidSet1 ::: validSet2 ::: invalidSet2 ::: invalidSet3)
+
+      val Right(gameAfterMove5) = gameAfterMove4.submitSet("player2", validSet2(0), validSet2(1), validSet2(2))
+      gameAfterMove5.points should be(Map("player1" -> 1, "player2" -> 2, "player3" -> 0))
+      gameAfterMove5.cardsOnTable should be(invalidSet1 ::: invalidSet2 ::: invalidSet3 ::: validSet4)
     }
   }
 }

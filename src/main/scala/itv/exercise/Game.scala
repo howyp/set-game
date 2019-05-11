@@ -16,7 +16,7 @@ class Game(private var state: GameState) {
         new Game(
           GameState(
             cardsOnTable = cardsOnTable.filterNot(Set(card1, card2, card3).contains) ::: state.remainingCards.take(3),
-            remainingCards = cardsOnTable,
+            remainingCards = state.remainingCards.drop(3),
             points = state.points.updated(player, state.points(player) + 1)
           )
         )
