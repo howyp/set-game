@@ -88,6 +88,14 @@ class GameSpec extends FreeSpec with Matchers {
       reason3 should be("not a valid set")
       gameAfterMove6.points should be(Map("player1" -> 1, "player2" -> 1, "player3" -> 0))
       gameAfterMove6.cardsOnTable should be(gameAfterMove5.cardsOnTable)
+
+      info("Player 1 submits a valid set, and no more cards are added because the deck is depleted")
+      val Valid(gameAfterMove7) = gameAfterMove6.submitSet("player1", validSet4(0), validSet4(1), validSet4(2))
+      gameAfterMove7.points should be(Map("player1" -> 2, "player2" -> 1, "player3" -> 0))
+      gameAfterMove7.cardsOnTable should be(invalidSet1 ::: invalidSet2 ::: invalidSet3)
+
+      info("The players declare that no valid sets are left and the game ends")
+      gameAfterMove7.noValidSetsFound() should be(Game.GameOver(winningPlayer = "player1"))
     }
   }
 }

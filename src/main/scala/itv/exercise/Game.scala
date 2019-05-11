@@ -3,7 +3,6 @@ package itv.exercise
 import java.lang.Math.max
 
 case class Game(cardsOnTable: List[Card], remainingCards: List[Card], points: Map[String, Int]) {
-
   def submitSet(player: String, card1: Card, card2: Card, card3: Card): Game.SubmitResult =
     if (!CardSet.validate(card1, card2, card3))
       Game.SubmitResult.Invalid(
@@ -20,13 +19,17 @@ case class Game(cardsOnTable: List[Card], remainingCards: List[Card], points: Ma
           points = points.updated(player, points(player) + 1)
         )
       )
+
+  def noValidSetsFound() = Game.GameOver(winningPlayer = points.maxBy(_._2)._1)
 }
 object Game {
-  sealed trait SubmitResult { def game: Game }
+  sealed trait SubmitResult
   object SubmitResult {
     case class Valid(game: Game)                   extends SubmitResult
     case class Invalid(reason: String, game: Game) extends SubmitResult
   }
+
+  case class GameOver(winningPlayer: String)
 
   def apply(cardsInDealingOrder: List[Card], players: Set[String]): Game =
     Game(
