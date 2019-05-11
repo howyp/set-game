@@ -12,11 +12,11 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
 
   "Three cards are" - {
     "a valid set if all features are valid" in forAll(validFeatureCombinations.map(featuresToCards)) {
-      case (card1, card2, card3) => Set.validate(card1, card2, card3) should be(true)
+      case (card1, card2, card3) => CardSet.validate(card1, card2, card3) should be(true)
     }
 
     "a invalid set if one feature is invalid" in forAll(combinationsWithAtLeastOneInvalidFeature.map(featuresToCards)) {
-      case (card1, card2, card3) => Set.validate(card1, card2, card3) should be(false)
+      case (card1, card2, card3) => CardSet.validate(card1, card2, card3) should be(false)
     }
   }
 

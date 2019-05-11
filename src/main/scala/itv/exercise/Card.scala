@@ -54,7 +54,7 @@ case class Card(
     shape: Shape
 )
 
-object Set {
+object CardSet {
 
   def validate(card1: Card, card2: Card, card3: Card): Boolean = {
     def validate[F <: FeatureValue](f: Card => F): Boolean = {
