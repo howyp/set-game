@@ -23,6 +23,11 @@ class GameSpec extends FreeSpec with Matchers {
       Card(Red, Three, Solid, Squiggle),
       Card(Red, Two, Striped, Oval)
     )
+    val validSet4 = List(
+      Card(Green, Three, Striped, Squiggle),
+      Card(Green, Three, Striped, Squiggle),
+      Card(Green, Three, Striped, Squiggle)
+    )
     val invalidSet1 = List(
       Card(Purple, One, Solid, Diamonds),
       Card(Red, One, Outlined, Diamonds),
@@ -38,7 +43,7 @@ class GameSpec extends FreeSpec with Matchers {
       Card(Red, One, Solid, Squiggle),
       Card(Red, One, Solid, Diamonds)
     )
-    val shuffledCards = validSet1 ::: invalidSet1 ::: validSet2 ::: invalidSet2 ::: validSet3 ::: invalidSet3
+    val shuffledCards = validSet1 ::: invalidSet1 ::: validSet2 ::: invalidSet2 ::: validSet3 ::: invalidSet3 ::: validSet4
     val initialGame   = Game(shuffledCards, Set("player1", "player2", "player3"))
 
     "Starts with dealing the first 12 cards onto the table" in {
@@ -48,15 +53,21 @@ class GameSpec extends FreeSpec with Matchers {
     "Starts with 0 points for all players" in {
       initialGame.points should be(Map("player1" -> 0, "player2" -> 0, "player3" -> 0))
     }
-    "Allows a player to submit a valid set, which removes those cards from the table, adding 3 more" in {
-      val Right(updatedGame) = initialGame.submitSet("player1", validSet1(0), validSet1(1), validSet1(2))
-      updatedGame.cardsOnTable should contain noneOf (validSet1(0), validSet1(1), validSet1(2))
-      updatedGame.cardsOnTable should be(invalidSet1 ::: validSet2 ::: invalidSet2 ::: validSet3)
-      updatedGame.points should be(Map("player1" -> 1, "player2" -> 0, "player3" -> 0))
-    }
-    "Rejects an invalid set when submitted" in {
-      initialGame.submitSet("player1", invalidSet1(0), invalidSet1(1), invalidSet1(2)) should be(
+    "Gameplay progresses:" in {
+      info(
+        "Player 1 submits a valid set, gaining a point, which removes those cards from the table, adding 3 more cards")
+      val Right(gameAfterMove1) = initialGame.submitSet("player1", validSet1(0), validSet1(1), validSet1(2))
+      gameAfterMove1.cardsOnTable should contain noneOf (validSet1(0), validSet1(1), validSet1(2))
+      gameAfterMove1.cardsOnTable should be(invalidSet1 ::: validSet2 ::: invalidSet2 ::: validSet3)
+      gameAfterMove1.points should be(Map("player1" -> 1, "player2" -> 0, "player3" -> 0))
+
+      info("Player 2 submits an invalid set, and stays on 0 points")
+      gameAfterMove1.submitSet("player1", invalidSet1(0), invalidSet1(1), invalidSet1(2)) should be(
         Left("not a valid set"))
+
+      info("Player 1 submits a set which includes cards not yet on the table")
+      gameAfterMove1.submitSet("player1", validSet4(0), validSet4(1), validSet4(2)) should be(
+        Left("cards not found on table"))
     }
   }
 }
