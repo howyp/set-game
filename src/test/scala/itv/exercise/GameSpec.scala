@@ -46,9 +46,12 @@ class GameSpec extends FreeSpec with Matchers {
       initialGame.cardsOnTable should be(validSet1 ::: invalidSet1 ::: validSet2 ::: invalidSet2)
     }
     "Allows a player to submit a valid set, which removes those cards from the table, adding 3 more" in {
-      val updatedGame = initialGame.callSet(validSet1(0), validSet1(1), validSet1(2))
+      val Right(updatedGame) = initialGame.callSet(validSet1(0), validSet1(1), validSet1(2))
       updatedGame.cardsOnTable should contain noneOf (validSet1(0), validSet1(1), validSet1(2))
       updatedGame.cardsOnTable should be(invalidSet1 ::: validSet2 ::: invalidSet2 ::: validSet3)
+    }
+    "Rejects an invalid set when submitted" in {
+      initialGame.callSet(invalidSet1(0), invalidSet1(1), invalidSet1(2)) should be(Left("not a valid set"))
     }
   }
 }
