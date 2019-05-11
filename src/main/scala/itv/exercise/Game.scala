@@ -6,14 +6,14 @@ class Game(private var state: GameState) {
   val cardsOnTable = state.cardsOnTable
   val points       = state.points
 
-  def callSet(card1: Card, card2: Card, card3: Card): Either[String, Game] =
+  def submitSet(player: String, card1: Card, card2: Card, card3: Card): Either[String, Game] =
     if (CardSet.validate(card1, card2, card3))
       Right(
         new Game(
           GameState(
             cardsOnTable = cardsOnTable.filterNot(Set(card1, card2, card3).contains) ::: state.remainingCards.take(3),
             remainingCards = cardsOnTable,
-            points = state.points
+            points = state.points.updated(player, state.points(player) + 1)
           )
         )
       )
