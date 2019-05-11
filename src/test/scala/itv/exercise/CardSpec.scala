@@ -17,6 +17,11 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
       Gen.oneOf(asList(feature.allValues)).map(v => (v, v, v)),
       Gen.const(feature.allValues).map(shuffleTuple)
     )
+    def invalidCombinationFor(feature: Feature) =
+      for {
+        first  <- Gen.oneOf(asList(feature.allValues))
+        second <- Gen.oneOf(asList(feature.allValues)) if first != second
+      } yield shuffleTuple((first, first, second))
 
     "a valid set if all features are valid" in forAll(
       validCombinationFor(Colour),
@@ -34,13 +39,21 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
           card3 = Card(colour3, number3, shading3, shape3)
         ) should be(true)
     }
-    "a invalid set if one feature is different in only one card" in {
-      val card = Card(Colour.Red, Number.Two, Shading.Outlined, Shape.Oval)
-      test(
-        card1 = card,
-        card2 = card,
-        card3 = card.copy(shading = Shading.Solid)
-      ) should be(false)
+    "a invalid set if one feature is invalid" in forAll(
+      validCombinationFor(Colour),
+      validCombinationFor(Number),
+      invalidCombinationFor(Shading),
+      validCombinationFor(Shape)
+    ) {
+      case ((colour1, colour2, colour3),
+            (number1, number2, number3),
+            (shading1, shading2, shading3),
+            (shape1, shape2, shape3)) =>
+        test(
+          card1 = Card(colour1, number1, shading1, shape1),
+          card2 = Card(colour2, number2, shading2, shape2),
+          card3 = Card(colour3, number3, shading3, shape3)
+        ) should be(false)
     }
   }
   def shuffleTuple[T](v: (T, T, T)): (T, T, T) =
