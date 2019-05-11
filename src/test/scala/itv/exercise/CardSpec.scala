@@ -10,7 +10,10 @@ import scala.util.Random
 
 class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks {
   def test(card1: Card, card2: Card, card3: Card): Boolean =
-    card1 == card2 && card2 == card3 || Feature.isValidForSet(card1.shading, card2.shading, card3.shading)
+    Feature.isValidForSet(card1.colour, card2.colour, card3.colour) &&
+      Feature.isValidForSet(card1.number, card2.number, card3.number) &&
+      Feature.isValidForSet(card1.shading, card2.shading, card3.shading) &&
+      Feature.isValidForSet(card1.shape, card2.shape, card3.shape)
 
   "Three cards are" - {
     def validCombinationFor(feature: Feature) = Gen.oneOf(
@@ -65,7 +68,7 @@ class CardSpec extends FreeSpec with Matchers with GeneratorDrivenPropertyChecks
   }
 
   private def fourBooleansWithAtLeastOneFalse =
-    Gen.zip(arbitrary[Boolean], arbitrary[Boolean], Gen.const(false), arbitrary[Boolean]) //TODO .map(shuffleTuple4)
+    Gen.zip(Gen.const(false), arbitrary[Boolean], arbitrary[Boolean], arbitrary[Boolean]).map(shuffleTuple4)
 
   def shuffleTuple[T](v: (T, T, T)): (T, T, T) =
     Random.shuffle(asList3(v)) match {
