@@ -39,11 +39,14 @@ class GameSpec extends FreeSpec with Matchers {
       Card(Red, One, Solid, Diamonds)
     )
     val shuffledCards = validSet1 ::: invalidSet1 ::: validSet2 ::: invalidSet2 ::: validSet3 ::: invalidSet3
-    val initialGame   = Game(shuffledCards)
+    val initialGame   = Game(shuffledCards, Set("player1", "player2", "player3"))
 
-    "Starts with dealing a the first 12 cards onto the table" in {
+    "Starts with dealing the first 12 cards onto the table" in {
       initialGame.cardsOnTable should have(size(12))
       initialGame.cardsOnTable should be(validSet1 ::: invalidSet1 ::: validSet2 ::: invalidSet2)
+    }
+    "Starts with 0 points for all players" in {
+      initialGame.points should be(Map("player1" -> 0, "player2" -> 0, "player3" -> 0))
     }
     "Allows a player to submit a valid set, which removes those cards from the table, adding 3 more" in {
       val Right(updatedGame) = initialGame.callSet(validSet1(0), validSet1(1), validSet1(2))
