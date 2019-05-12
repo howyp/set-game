@@ -6,8 +6,8 @@ case class Game(cardsOnTable: List[Card], remainingCards: List[Card], points: Ma
   def submitSet(player: String, card1: Card, card2: Card, card3: Card): Game.SubmitResult =
     if (!CardSet.validate(card1, card2, card3))
       Game.SubmitResult.Invalid(
-        "not a valid set",
-        this.copy(points = points.updated(player, max(points(player) - 1, 0)))
+        reason = "not a valid set",
+        game = this.copy(points = points.updated(player, max(points(player) - 1, 0)))
       )
     else if (!(cardsOnTable.contains(card1) || cardsOnTable.contains(card2) || cardsOnTable.contains(card3)))
       Game.SubmitResult.Invalid("cards not found on table", this)

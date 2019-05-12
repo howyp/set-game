@@ -93,5 +93,8 @@ class GameSpec extends FreeSpec with Matchers {
       info("The players declare that no valid sets are left and the game ends")
       g7.noValidSetsFound() should be(Game.GameOver(winningPlayer = "player1"))
     }
+    //TODO These are more advanced rules I would implement with further time
+    "if the deck is not exhausted, 3 more cards are dealt when declaring that no valid sets are found" in pending
+    "if multiple players have the same maximum score then that game is a draw" in pending
   }
 }
