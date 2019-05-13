@@ -1,11 +1,11 @@
-package itv.exercise
+package com.github.howyp.set
 
 import org.scalatest.{FreeSpec, Matchers}
 import Colour._
 import Number._
 import Shading._
 import Shape._
-import itv.exercise.Game.SubmitResult.{Invalid, Valid}
+import Game.SubmitResult.{Invalid, Valid}
 
 class GameSpec extends FreeSpec with Matchers {
   "A game of Set" - {

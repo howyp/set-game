@@ -1,4 +1,4 @@
-package itv.exercise
+package com.github.howyp.set
 
 import java.lang.Math.max
 

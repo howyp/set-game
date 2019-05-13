@@ -1,4 +1,4 @@
-package itv.exercise
+package com.github.howyp.set
 
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen

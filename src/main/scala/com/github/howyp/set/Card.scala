@@ -1,4 +1,4 @@
-package itv.exercise
+package com.github.howyp.set
 
 sealed trait FeatureValue
 
